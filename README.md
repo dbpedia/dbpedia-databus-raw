@@ -13,5 +13,5 @@ Access at `localhost:8080`
 
 Test the downloading without pulling the entire bus:
 ```
-wget --mirror --no-parent localhost:8080/marvin/wikidata/instance-types
+wget --mirror --no-parent localhost:8080/marvin/wikidata/instance-types/
 ```

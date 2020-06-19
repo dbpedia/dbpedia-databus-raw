@@ -3,7 +3,7 @@
 # VARIABLES
 #############
 
-# $type   - One of: index, publisher, group, artifact, version
+# $pathLength  - Length of the path, can be used to adjust template path depth to depth
 # $parent - The page parent
 # $links  - An array of links. Each link has the following fields:
 #               $label   - The link label

@@ -72,15 +72,6 @@ EOD);
     return array_pop($tmp);
   }
 
-  public function removeDomain($uri) {
-    $tmp = explode('/', $uri);
-    return array_pop($tmp);
-  }
-
-  public function debugPrint($query) {
-    echo "<pre>".str_replace('>', '&#62;', str_replace('<', '&#60;', $query))."</pre>";
-  }
-
   /**
    * Connects to the sparql endpoint and executes a query
    * @param  [type] $query [description]

@@ -1,18 +1,15 @@
 <?php
 include_once("lib/sparqlhelper.php");
-
 $sparql = new SparqlHelper("https://databus.dbpedia.org/repo/sparql");
-$publishers = $sparql->getPublishers();
 
+$pathEntries = explode('/', rtrim($_GET["path"], '/'));
+array_shift($pathEntries);
+
+$pathLength = count($pathEntries);
+
+$links = $sparql->getLinks($pathEntries);
+$parent = $pathLength == 0 ? 'DBpedia Databus' : $pathEntries[$pathLength - 1];
+
+include_once('template.php')
 ?>
-<html>
- <head>
-  <title>INDEX</title>
- </head>
- <body>
- <h1>Databus</h1>
- <?php foreach ($publishers as &$publisher) { ?>
-    <p><a href="/<?=$publisher?>"><?=$publisher?></a></p>
- <?php } ?>
- </body>
-</html>
+

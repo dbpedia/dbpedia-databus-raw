@@ -4,51 +4,48 @@ include_once("sparqllib.php");
 
 class SparqlHelper {
 
-  public $getPublishersQuery = <<<EOD
+  public $queries = array(
+<<<EOD
 PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 SELECT DISTINCT ?uri WHERE {
   ?dataset dct:publisher ?publisher.
   ?publisher foaf:account ?uri .
 }
-EOD;
-
-public $getGroupsQuery = <<<EOD
+EOD,
+<<<EOD
 PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-SELECT DISTINCT ?group WHERE {
+SELECT DISTINCT ?uri WHERE {
   ?dataset dct:publisher ?publisher .
-  ?publisher foaf:account <%PUBLISHER_URI%> .
+  ?publisher foaf:account <%DATABUS_URI%> .
   ?dataset dct:publisher ?publisher .
-  ?dataset dataid:group ?group
+  ?dataset dataid:group ?uri
 }
-EOD;
-
-public $getArtifactsQuery = <<<EOD
+EOD,
+<<<EOD
 PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
-SELECT DISTINCT ?artifact WHERE {
-  ?dataset dataid:group <%GROUP_URI%> .
-  ?dataset dataid:artifact ?artifact .
+SELECT DISTINCT ?uri WHERE {
+  ?dataset dataid:group <%DATABUS_URI%> .
+  ?dataset dataid:artifact ?uri .
 }
-EOD;
-
-public $getVersionsQuery = <<<EOD
+EOD,
+<<<EOD
 PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
-SELECT DISTINCT ?version WHERE {
-  ?dataset dataid:version ?version .
-  ?dataset dataid:artifact <%ARTIFACT_URI%> .
+SELECT DISTINCT ?uri WHERE {
+  ?dataset dataid:version ?uri .
+  ?dataset dataid:artifact <%DATABUS_URI%> .
 }
-EOD;
-
-public $getFilesQuery = <<<EOD
+EOD,
+<<<EOD
 PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
-SELECT ?file WHERE {
-?distribution dataid:file ?file .
+SELECT ?uri WHERE {
+?distribution dataid:file ?uri .
 ?distribution dataid:isDistributionOf ?dataset .
-?dataset dataid:version <%VERSION_URI%> .
+?dataset dataid:version <%DATABUS_URI%> .
 }
-EOD;
+EOD);
 
   public $sparqlEndpointUrl = "https://databus.dbpedia.org/repo/sparql/";
 
@@ -67,6 +64,11 @@ EOD;
    * @return [type]      [description]
    */
   public function uriToName($uri) {
+    $tmp = explode('/', $uri);
+    return array_pop($tmp);
+  }
+
+  public function removeDomain($uri) {
     $tmp = explode('/', $uri);
     return array_pop($tmp);
   }
@@ -99,65 +101,23 @@ EOD;
     return $result;
   }
 
-  function getPublishers() {
-    $result = $this->executeQuery($this->getPublishersQuery);
-    $data = array();
+  function getLinks($pathEntries) {
+    $pathLength = count($pathEntries);
+    $relativePath = join('/', $pathEntries);
 
-    while($row = $result->fetch_array()) {
-      $data[] = $this->uriToName($row["uri"]);
-    }
-    return $data;
-  }
-
-  function getGroups($publisher) {
-    $publisherUri = 'https://databus.dbpedia.org/'.$publisher;
-    $query = str_replace('%PUBLISHER_URI%', $publisherUri, $this->getGroupsQuery);
+    $databusUri =  'https://databus.dbpedia.org/'.$relativePath;
+    $query = str_replace('%DATABUS_URI%', $databusUri, $this->queries[$pathLength]);
 
     $result = $this->executeQuery($query);
-    $data = array();
-
+    $links = array();
+   
     while($row = $result->fetch_array()) {
-      $data[] = $this->uriToName($row["group"]);
+      $name = $this->uriToName($row["uri"]);
+      $uri = $pathLength == 0 ? $name : $relativePath.'/'.$name;
+
+      $links[] = array('label' => $name, 'uri' => $uri);
     }
-    return $data;
-  }
 
-  function getArtifacts($publisher, $group) {
-    $groupUri = 'https://databus.dbpedia.org/'.$publisher.'/'.$group;
-    $query = str_replace('%GROUP_URI%', $groupUri, $this->getArtifactsQuery);
-
-    $result = $this->executeQuery($query);
-    $data = array();
-
-    while($row = $result->fetch_array()) {
-      $data[] = $this->uriToName($row["artifact"]);
-    }
-    return $data;
-  }
-
-  function getVersions($publisher, $group, $artifact) {
-    $artifactUri = 'https://databus.dbpedia.org/'.$publisher.'/'.$group.'/'.$artifact;
-    $query = str_replace('%ARTIFACT_URI%', $artifactUri, $this->getVersionsQuery);
-
-    $result = $this->executeQuery($query);
-    $data = array();
-
-    while($row = $result->fetch_array()) {
-      $data[] = $this->uriToName($row["version"]);
-    }
-    return $data;
-  }
-
-  function getFiles($publisher, $group, $artifact, $version) {
-    $versionUri = 'https://databus.dbpedia.org/'.$publisher.'/'.$group.'/'.$artifact.'/'.$version;
-    $query = str_replace('%VERSION_URI%', $versionUri, $this->getFilesQuery);
-
-    $result = $this->executeQuery($query);
-    $data = array();
-
-    while($row = $result->fetch_array()) {
-      $data[] = $this->uriToName($row["file"]);
-    }
-    return $data;
+    return $links;
   }
 }

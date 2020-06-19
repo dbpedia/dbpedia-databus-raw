@@ -1,3 +1,7 @@
 body {
     background-color: white;
 }
+
+th {
+    text-align: left;
+}

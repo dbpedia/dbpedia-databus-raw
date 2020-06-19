@@ -13,7 +13,7 @@
 <html>
     <head>
         <title>Index of <?=$parent?></title>
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="/style.css">
     </head>
     <body>
         <h1>Index of <?=$parent?></h1>
@@ -22,11 +22,18 @@
         </div>
         <div>
             <table>
-            <?php foreach ($links as &$link) { ?>
+                <tr>
+                    <th>Link</th>
+                    <th>Time</th>
+                    <th>Size</th>
+                </tr>
+                <?php foreach ($links as &$link) { ?>
                 <tr>
                     <td><a href="/<?=$link['uri']?>"><?=$link['label']?></a></td>
+                    <td><?=$link['time']?></td>
+                    <td><?=$link['size']?></td>
                 </tr>
-            <?php } ?>
+                <?php } ?>
             </table>
         </div>
     </body>

@@ -40,8 +40,12 @@ SELECT DISTINCT ?uri WHERE {
 EOD,
 <<<EOD
 PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
-SELECT ?uri WHERE {
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX dcat:  <http://www.w3.org/ns/dcat#>
+SELECT DISTINCT ?uri ?size ?time WHERE {
 ?distribution dataid:file ?uri .
+?distribution dcat:byteSize ?size .
+?distribution dct:issued ?time .
 ?distribution dataid:isDistributionOf ?dataset .
 ?dataset dataid:version <%DATABUS_URI%> .
 }
@@ -114,8 +118,10 @@ EOD);
     while($row = $result->fetch_array()) {
       $name = $this->uriToName($row["uri"]);
       $uri = $pathLength == 0 ? $name : $relativePath.'/'.$name;
+      $size = $row["size"] != NULL ? $row["size"] : '-';
+      $time = $row["time"] != NULL ? $row["time"] : '-';
 
-      $links[] = array('label' => $name, 'uri' => $uri);
+      $links[] = array('label' => $name, 'uri' => $uri, 'size' => $size, 'time' => $time);
     }
 
     return $links;

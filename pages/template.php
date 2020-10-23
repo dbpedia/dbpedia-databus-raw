@@ -21,7 +21,7 @@
             <a href="../">../</a>
         </div>
         <div>
-            <table>
+            <table style="width:100%">
                 <tr>
                     <th>Link</th>
                     <th>Time</th>

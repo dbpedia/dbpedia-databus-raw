@@ -14,7 +14,6 @@
     <head>
         <title>Index of <?=$parent?></title>
         <link rel="stylesheet" href="/style.css">
-        <script src="./scripts.js"></script>
     </head>
     <body>
         <h1>Index of <?=$parent?></h1>
@@ -43,5 +42,6 @@
                 <?php } ?>
             </table>
         </div>
+        <script src="/scripts.js"></script>
     </body>
 </html>

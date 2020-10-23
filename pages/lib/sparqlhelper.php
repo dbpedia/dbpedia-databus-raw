@@ -160,6 +160,9 @@ public $docQueries = array(
 
       $label = $row["label"] != NULL ? $row["label"] : '-';
       $desc = $row["desc"] != NULL ? $row["desc"] : '-';
+    } else {
+      $label = "DBpedia Databus";
+      $desc = "Global and Unified Access to Data";
     }
 
     return array('label' => $label, 'databus-uri' => $databusUri, 'desc' => $desc);

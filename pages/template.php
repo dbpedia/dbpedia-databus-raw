@@ -14,13 +14,11 @@
     <head>
         <title>Index of <?=$parent?></title>
         <link rel="stylesheet" href="/style.css">
-        <script src="/scripts.js"></script>
     </head>
     <body>
-        <h1>Index of <?=$parent?></h1>
         <div>
-            <h2><?=$docs['label']?></h2>
-            <h3><?php foreach ($breakcrumbs as &$crumb) { ?> /<a href="/<?=$crumb?>/"><?=$crumb?></a> <?php } ?> </h3>
+            <h1><?=$docs['label']?></h1>
+            <h3><a href="/">home</a><?php for ($i = 0; $i < count($pathEntries); $i++) { ?> /<a href="<?=$breadcrumbs[$i]?>/"><?=$pathEntries[$i]?></a> <?php } ?> </h3>
             <p><?=$docs['desc']?></p>
             <p>Databus URI: <a href="<?=$docs['databus-uri']?>/"><?=$docs['databus-uri']?></a></p>
         </div>

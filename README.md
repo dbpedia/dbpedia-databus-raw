@@ -6,7 +6,10 @@
 git clone https://github.com/dbpedia/databus-raw.git
 cd databus-raw
 docker build -t databus-raw .
-docker run -it --name databus-raw-instance -p 8080:80 databus-raw
+
+docker stop databus-raw-instance
+docker rm databus-raw-instance
+docker run -d -it --name databus-raw-instance -p 8080:80 databus-raw
 ```
 
 Access at `localhost:8080`

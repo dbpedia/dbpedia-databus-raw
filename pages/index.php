@@ -26,8 +26,8 @@ function formatSize($fileSizeInBytes) {
     if($fileSizeInBytes == '-') {
         return '-';
     }
-    var $i = 0;
-    var $byteUnits = [ '', ' kB', ' MB', ' GB', ' TB', 'PB', 'EB', 'ZB', 'YB' ];
+    $i = 0;
+    $byteUnits = [ '', ' kB', ' MB', ' GB', ' TB', 'PB', 'EB', 'ZB', 'YB' ];
     while($fileSizeInBytes > 1000) {
         $fileSizeInBytes = $fileSizeInBytes / 1000;
         $i++;

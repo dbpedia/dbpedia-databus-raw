@@ -22,6 +22,21 @@ $docs = $sparql->getDocs($pathEntries);
 $links = $sparql->getLinks($pathEntries);
 $parent = $pathLength == 0 ? 'DBpedia Databus' : $pathEntries[$pathLength - 1];
 
+function formatSize($fileSizeInBytes) {
+    if($fileSizeInBytes == '-') {
+        return '-';
+    }
+    var $i = 0;
+    var $byteUnits = [ '', ' kB', ' MB', ' GB', ' TB', 'PB', 'EB', 'ZB', 'YB' ];
+    while($fileSizeInBytes > 1000) {
+        $fileSizeInBytes = $fileSizeInBytes / 1000;
+        $i++;
+    }
+
+    return round($fileSizeInBytes, 1).$byteUnits[$i];
+};
+
+
 include_once('template.php')
 ?>
 

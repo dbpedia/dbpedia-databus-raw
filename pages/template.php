@@ -37,7 +37,7 @@
                 <tr>
                     <td><a href="/<?=$link['uri']?>/"><?=$link['label']?></a></td>
                     <td><?=$link['time']?></td>
-                    <td><?=$link['size']?></td>
+                    <td value="<?=$link['size']?>"><?=formatSize($link['size'])?></td>
                 </tr>
                 <?php } ?>
             </table>

@@ -19,10 +19,10 @@
         <h1>Index of <?=$parent?></h1>
         <div>
             <h2><?=$docs['label']?></h2>
-            <p>Databus URI: <a href="/<?=$docs['databus-uri']?>/"><?=$docs['databus-uri']?></a></p>
             <p><?=$docs['desc']?></p>
+            <p>Databus URI: <a href="<?=$docs['databus-uri']?>/"><?=$docs['databus-uri']?></a></p>
         </div>
-
+        <br />
         <div>
             <a href="../">../</a>
         </div>

@@ -70,10 +70,10 @@ public $docQueries = array(
   SELECT DISTINCT ?label ?desc WHERE {
  
     BIND(<%DATABUS_URI%> AS ?uri) 
-    OPTIONAL { ?uri rdfs:label ?label . }
     ?dataset dataid:group ?uri .
-    OPTIONAL { ?dataset dataid:groupdocu ?desc . }
     ?dataset dct:issued ?date.
+    OPTIONAL { ?uri rdfs:comment ?desc . }
+    OPTIONAL { ?uri rdfs:label ?label . }
   }
   ORDER BY desc(?date) LIMIT 1
   EOD,
@@ -158,7 +158,7 @@ public $docQueries = array(
     
       $row = $queryResult->fetch_array();
 
-      $label = $row["label"] != NULL ? $row["size"] : '-';
+      $label = $row["label"] != NULL ? $row["label"] : '-';
       $desc = $row["desc"] != NULL ? $row["desc"] : '-';
     }
 

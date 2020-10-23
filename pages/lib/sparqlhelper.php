@@ -4,7 +4,7 @@ include_once("sparqllib.php");
 
 class SparqlHelper {
 
-  public $queries = array(
+  public $linkQueries = array(
 <<<EOD
 PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -51,6 +51,54 @@ SELECT DISTINCT ?uri ?size ?time WHERE {
 }
 EOD);
 
+
+public $docQueries = array(
+  <<<EOD
+  EOD,
+  <<<EOD
+  PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+  SELECT DISTINCT ?label ?desc WHERE {
+    ?publisher foaf:account <%DATABUS_URI%> .
+    ?publisher foaf:name ?label .
+    OPTIONAL { ?publisher foaf:status ?desc . }
+  } LIMIT 1
+  EOD,
+  <<<EOD
+  PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
+  PREFIX dct: <http://purl.org/dc/terms/>
+  PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+  SELECT DISTINCT ?label ?desc WHERE {
+ 
+    BIND(<%DATABUS_URI%> AS ?uri) 
+    OPTIONAL { ?uri rdfs:label ?label . }
+    ?dataset dataid:group ?uri .
+    OPTIONAL { ?dataset dataid:groupdocu ?desc . }
+    ?dataset dct:issued ?date.
+  }
+  ORDER BY desc(?date) LIMIT 1
+  EOD,
+  <<<EOD
+  PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
+  PREFIX dct: <http://purl.org/dc/terms/>
+  PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+  SELECT DISTINCT ?label ?desc WHERE {
+    ?dataset dataid:artifact <%DATABUS_URI%> .
+    ?dataset rdfs:label ?label.
+    ?dataset rdfs:comment ?desc.
+    ?dataset dct:hasVersion ?version.
+  }
+  ORDER BY desc(?version) LIMIT 1
+  EOD,
+  <<<EOD
+  PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
+  PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+  SELECT DISTINCT ?label ?desc WHERE {
+    ?dataset dataid:version <%DATABUS_URI%> .
+    ?dataset rdfs:label ?label.
+    ?dataset rdfs:comment ?desc.
+  } LIMIT 1
+  EOD);
+
   public $sparqlEndpointUrl = "https://databus.dbpedia.org/repo/sparql/";
 
   /**
@@ -96,17 +144,38 @@ EOD);
     return $result;
   }
 
+  function getDocs($pathEntries) {
+   
+    $pathLength = count($pathEntries);
+    $relativePath = join('/', $pathEntries);
+    $databusUri =  'https://databus.dbpedia.org/'.$relativePath;
+    $label = '-';
+    $desc = '-';
+
+    if($pathLength > 0) {
+      $query = str_replace('%DATABUS_URI%', $databusUri, $this->docQueries[$pathLength]);
+      $queryResult = $this->executeQuery($query);
+    
+      $row = $queryResult->fetch_array();
+
+      $label = $row["label"] != NULL ? $row["size"] : '-';
+      $desc = $row["desc"] != NULL ? $row["desc"] : '-';
+    }
+
+    return array('label' => $label, 'databus-uri' => $databusUri, 'desc' => $desc);
+  }
+
   function getLinks($pathEntries) {
     $pathLength = count($pathEntries);
     $relativePath = join('/', $pathEntries);
 
     $databusUri =  'https://databus.dbpedia.org/'.$relativePath;
-    $query = str_replace('%DATABUS_URI%', $databusUri, $this->queries[$pathLength]);
+    $query = str_replace('%DATABUS_URI%', $databusUri, $this->linkQueries[$pathLength]);
+    $queryResult = $this->executeQuery($query);
 
-    $result = $this->executeQuery($query);
     $links = array();
    
-    while($row = $result->fetch_array()) {
+    while($row = $queryResult->fetch_array()) {
       $name = $this->uriToName($row["uri"]);
       $uri = $pathLength == 0 ? $name : $relativePath.'/'.$name;
       $size = $row["size"] != NULL ? $row["size"] : '-';
